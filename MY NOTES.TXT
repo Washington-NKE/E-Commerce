@@ -1,0 +1,22 @@
+NODEMON
+-Restarts the server every time a file changes
+-nodemon is used in development while node is used in production
+
+TYPE MODULE VS TYPE = COMMONJS
+//const express = require('express'); -COMMONJS
+//import express from "express";  - MODULE
+
+.env
+-dotenv
+-dotenv.config()
+
+ROUTES AND CONTROLLERS
+
+express.ROUTER
+
+//X8pE00yoFBxvT0HF
+
+DESKTOP APP CALLED POSTMAN
+For API testing
+
+//Redis is key-value store
