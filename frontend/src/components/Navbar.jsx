@@ -4,6 +4,7 @@ import { useUserStore } from "../stores/useUserStore";
 import { useCartStore } from "../stores/useCartStore";
 
 const Navbar = () => {
+    const isDisabled = true;
     const {user, logout} = useUserStore();
     const isAdmin = user?.role === "admin";
     const {cart} = useCartStore();
@@ -60,12 +61,18 @@ const Navbar = () => {
                     </button>
                 ) : (
                     <>
-                        <Link to={"/signup"} className="bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4 rounded-md flex items-center transition duration-300 ease-in-out">
+                        <Link to={isDisabled ? "#" : "/signup"}  // Redirect to "#" when disabled
+                        className={`bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4 rounded-md flex items-center transition duration-300 ease-in-out ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        onClick={isDisabled ? (e) => e.preventDefault() : null}  // Prevent action if disabled
+                        >
                         <UserPlus className="mr-2" size={18} />
                         Sign Up
                         </Link>
 
-                        <Link to={"/login"} className="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-md flex items-center transition duration-300 ease-in-out">
+                        <Link to={isDisabled ? "#" : "/login"}  // Redirect to "#" when disabled
+                        className={`bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-md flex items-center transition duration-300 ease-in-out ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                         onClick={isDisabled ? (e) => e.preventDefault() : null}  // Prevent action if disabled
+                        >
                         <UserPlus className="mr-2" size={18} />
                         login
                         </Link>
