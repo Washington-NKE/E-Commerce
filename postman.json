@@ -1,0 +1,208 @@
+{
+  "info": {
+    "name": "E-commerce API Tests",
+    "description": "Complete API testing for the e-commerce project"
+  },
+  "variable": [
+    {
+      "key": "baseURL",
+      "value": "http://localhost:5000"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/auth/signup",
+              "host": ["{{baseURL}}"],
+              "path": ["api", "auth", "signup"]
+            }
+          }
+        },
+        {
+          "name": "Login User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/auth/login",
+              "host": ["{{baseURL}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Logout User",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/auth/logout",
+              "host": ["{{baseURL}}"],
+              "path": ["api", "auth", "logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "Get All Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/products",
+              "host": ["{{baseURL}}"],
+              "path": ["api", "products"]
+            }
+          }
+        },
+        {
+          "name": "Create Product (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Bracelet\",\n  \"description\": \"Beautiful handmade bracelet\",\n  \"price\": 25.99,\n  \"image\": \"https://example.com/bracelet.jpg\",\n  \"category\": \"Jewelry\"\n}"
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/products",
+              "host": ["{{baseURL}}"],
+              "path": ["api", "products"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cart",
+      "item": [
+        {
+          "name": "Get Cart",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/cart",
+              "host": ["{{baseURL}}"],
+              "path": ["api", "cart"]
+            }
+          }
+        },
+        {
+          "name": "Add to Cart",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"REPLACE_WITH_ACTUAL_PRODUCT_ID\"\n}"
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/cart",
+              "host": ["{{baseURL}}"],
+              "path": ["api", "cart"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "Create Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"products\": [\n    {\n      \"product\": \"REPLACE_WITH_PRODUCT_ID\",\n      \"quantity\": 2\n    }\n  ],\n  \"totalAmount\": 51.98\n}"
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/orders/create",
+              "host": ["{{baseURL}}"],
+              "path": ["api", "orders", "create"]
+            }
+          }
+        },
+        {
+          "name": "Get User Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/orders/user-orders",
+              "host": ["{{baseURL}}"],
+              "path": ["api", "orders", "user-orders"]
+            }
+          }
+        },
+        {
+          "name": "M-Pesa Webhook Simulation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"You have received Ksh 51.98 from John Doe 254712345678 on 30/07/25 at 2:30 PM Transaction ID: ABC123DEF456\",\n  \"from\": \"MPESA\"\n}"
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/orders/mpesa-webhook",
+              "host": ["{{baseURL}}"],
+              "path": ["api", "orders", "mpesa-webhook"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
