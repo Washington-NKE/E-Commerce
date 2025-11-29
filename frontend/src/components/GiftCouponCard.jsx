@@ -3,16 +3,16 @@ import { useEffect, useState } from 'react'
 import { useCartStore } from '../stores/useCartStore';
 
 const GiftCouponCard = () => {
-    const {userInputCode, SetUserInputCode} = useState('');
+    const [userInputCode, SetUserInputCode] = useState('');
     const {coupon, isCouponApplied, applyCoupon, getMyCoupon, removeCoupon} = useCartStore();
 
     useEffect(() => {
         getMyCoupon();
-    }, [])
+    }, [getMyCoupon])
 
     useEffect(() => {
-        if(coupon) SetUserInputCode(coupon.code);
-    }, [coupon])
+        if(coupon && isCouponApplied) SetUserInputCode(coupon.code);
+    }, [coupon, isCouponApplied])
 
     const handleApplyCoupon = () => {
         if(!userInputCode) return;

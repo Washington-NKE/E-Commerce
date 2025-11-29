@@ -1,7 +1,7 @@
 // frontend/src/pages/OrdersPage.jsx
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Package, Clock, CheckCircle, XCircle, ArrowLeft } from 'lucide-react';
+import { Package, Clock, CheckCircle, XCircle, ArrowLeft, MapPin, Calendar } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import axios from '../lib/axios.js';
 
@@ -127,12 +127,10 @@ const OrdersPage = () => {
                                                 Order #{order.orderId}
                                             </h3>
                                             <p className="text-gray-400 text-sm">
-                                                {new Date(order.createdAt).toLocaleDateString('en-US', {
+                                                Placed on: {new Date(order.createdAt).toLocaleDateString('en-US', {
                                                     year: 'numeric',
                                                     month: 'long',
                                                     day: 'numeric',
-                                                    hour: '2-digit',
-                                                    minute: '2-digit'
                                                 })}
                                             </p>
                                         </div>
@@ -150,6 +148,34 @@ const OrdersPage = () => {
                                         </div>
                                     </div>
                                 </div>
+
+                                {/* PICKUP DETAILS SECTION */}
+                                {order.pickupLocation && (
+                                    <div className="mb-6 p-4 bg-gray-700/50 rounded-lg border border-gray-600">
+                                        <h4 className="text-emerald-400 font-semibold mb-3 flex items-center">
+                                            <Package size={18} className="mr-2" />
+                                            Pickup Details
+                                        </h4>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="flex items-start">
+                                                <MapPin className="text-gray-400 mt-1 mr-2" size={16} />
+                                                <div>
+                                                    <p className="text-sm text-gray-400">Location</p>
+                                                    <p className="text-white font-medium">{order.pickupLocation}</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-start">
+                                                <Calendar className="text-gray-400 mt-1 mr-2" size={16} />
+                                                <div>
+                                                    <p className="text-sm text-gray-400">Date & Time</p>
+                                                    <p className="text-white font-medium">
+                                                        {order.pickupDate} at {order.pickupTime}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
 
                                 {order.mpesaTransactionId && (
                                     <div className="mb-4 p-3 bg-green-400/10 border border-green-400/20 rounded-lg">
@@ -169,15 +195,19 @@ const OrdersPage = () => {
                                     {order.products.map((item, itemIndex) => (
                                         <div key={itemIndex} className="flex items-center justify-between py-2 border-b border-gray-700 last:border-b-0">
                                             <div className="flex items-center space-x-3">
-                                                {item.product.image && (
+                                                {item.product && item.product.image ? (
                                                     <img
                                                         src={item.product.image}
                                                         alt={item.product.name}
                                                         className="w-12 h-12 object-cover rounded-lg"
                                                     />
+                                                ) : (
+                                                     <div className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center">
+                                                        <Package size={20} className="text-gray-500"/>
+                                                     </div>
                                                 )}
                                                 <div>
-                                                    <h5 className="text-white font-medium">{item.product.name}</h5>
+                                                    <h5 className="text-white font-medium">{item.product ? item.product.name : 'Unknown Product'}</h5>
                                                     <p className="text-gray-400 text-sm">Quantity: {item.quantity}</p>
                                                 </div>
                                             </div>
@@ -191,7 +221,7 @@ const OrdersPage = () => {
                                 {order.status === 'pending' && (
                                     <div className="mt-4 p-3 bg-yellow-400/10 border border-yellow-400/20 rounded-lg">
                                         <p className="text-yellow-400 text-sm">
-                                            <strong>Payment Pending:</strong> Please complete your M-Pesa payment to Phone Number 0713440774
+                                            <strong>Payment Pending:</strong> Please complete your M-Pesa payment.
                                         </p>
                                     </div>
                                 )}

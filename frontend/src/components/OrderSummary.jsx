@@ -5,7 +5,12 @@ import { useCartStore } from "../stores/useCartStore";
 import { Link } from "react-router-dom";
 
 const OrderSummary = () => {
-    const { total, subtotal, coupon, isCouponApplied } = useCartStore();
+    let { total, subtotal, coupon, isCouponApplied } = useCartStore();
+    console.log("Results of useCartStore", useCartStore());
+    console.log("Total is:", total);
+    console.log("Subtotal is:", subtotal);
+    subtotal = Number(subtotal) || 0;
+    total = Number(total) || 0;
     const savings = subtotal - total;
     const formattedSubTotal = subtotal.toFixed(2);
     const formattedTotal = total.toFixed(2);

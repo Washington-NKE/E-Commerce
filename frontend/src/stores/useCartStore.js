@@ -1,8 +1,8 @@
-import {create} from "zustand";
+import { create } from "zustand";
 import axios from "../lib/axios.js";
-import {toast} from "react-hot-toast";
+import { toast } from "react-hot-toast";
 
-export const useCartStore = create((set,get) => ({
+export const useCartStore = create((set, get) => ({
     cart: [],
     coupon: null,
     total: 0,
@@ -12,77 +12,63 @@ export const useCartStore = create((set,get) => ({
     getMyCoupon: async () => {
         try {
             const res = await axios.get('/coupons');
-            set({coupon: res.data});
-            get().calculateTotals();
+            // Store the available coupon but DO NOT apply it automatically
+            // isCouponApplied remains false by default
+            set({ coupon: res.data }); 
         } catch (error) {
-            toast.error(error.response.data.message || 'Something went wrong');
+            console.error("Error fetching coupons:", error);
         }
     },
 
     applyCoupon: async (code) => {
         try {
-            const res = await axios.post('/coupon/validate', {code});
-            set({coupon: res.data, isCouponApplied: true});
+            const res = await axios.post('/coupons/validate', { code });
+            set({ coupon: res.data, isCouponApplied: true });
             get().calculateTotals();
+            toast.success("Coupon applied successfully");
         } catch (error) {
-            toast.error(error.response.data.message || 'Something went wrong');
+            toast.error(error.response?.data?.message || 'Invalid coupon code');
         }
     },
-        
+
     removeCoupon: async () => {
-        set({coupon: null, isCouponApplied: false});
+        set({ coupon: null, isCouponApplied: false });
         get().calculateTotals();
+        toast.success("Coupon removed");
     },
 
     getCartItems: async () => {
         try {
             const res = await axios.get('/cart');
-            set({cart: res.data});
+            set({ cart: res.data });
             get().calculateTotals();
         } catch (error) {
-            toast.error(error.response.data.message || 'Something went wrong');
+            set({ cart: [] });
+            toast.error(error.response?.data?.message || 'Failed to fetch cart');
         }
     },
 
     addToCart: async (product) => {
         try {
-            // Add to backend
-            await axios.post('/cart', {productId: product._id});
-            
-            // Fetch fresh cart data from backend to ensure sync
-            // This already handles the state update correctly
-            await get().getCartItems();
-            
-            // Remove the manual state update - it's causing the duplication!
-            // The getCartItems() call above already updates the cart state
-            
+            await axios.post('/cart', { productId: product._id });
             toast.success('Product added to cart');
-            // calculateTotals() is already called in getCartItems()
+            
+            // Fetch fresh cart to update UI
+            get().getCartItems(); 
         } catch (error) {
-            toast.error(error.response?.data?.message || error.message || 'Something went wrong');
+            toast.error(error.response?.data?.message || 'Failed to add item');
         }
-    },
-
-    calculateTotals: () => {
-        const {cart, coupon} = get();
-        const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-        let total = subtotal;
-        if (coupon) {
-            const discount = subtotal * coupon.discount / 100;
-            total = subtotal - discount;
-        }
-        set({subtotal, total});
     },
 
     removeFromCart: async (productId) => {
         try {
-            await axios.delete(`/cart/`, {data: {productId}});
+            await axios.delete(`/cart`, { data: { productId } });
             set((prevState) => ({
                 cart: prevState.cart.filter(item => item._id !== productId)
             }));
             get().calculateTotals();
         } catch (error) {
-            toast.error(error.response?.data?.message || 'Something went wrong');
+            toast.error(error.response?.data?.message || 'Failed to remove item');
         }
     },
 
@@ -93,25 +79,42 @@ export const useCartStore = create((set,get) => ({
         }
 
         try {
-            await axios.put(`/cart/${productId}`, {quantity});
+            await axios.put(`/cart/${productId}`, { quantity });
             set((prevState) => ({
-                cart: prevState.cart.map(item => 
-                    item._id === productId ? {...item, quantity} : item
+                cart: prevState.cart.map(item =>
+                    item._id === productId ? { ...item, quantity } : item
                 )
             }));
             get().calculateTotals();
         } catch (error) {
-            toast.error(error.response?.data?.message || 'Something went wrong');
+            toast.error(error.response?.data?.message || 'Failed to update quantity');
         }
     },
-        
+
     clearCart: async () => {
         try {
             await axios.delete('/cart');
-            set({ cart: [] });
-            get().calculateTotals();
+            set({ cart: [], coupon: null, total: 0, subtotal: 0 });
         } catch (error) {
             console.error('Error clearing cart:', error);
         }
     },
-}))
+
+    calculateTotals: () => {
+        const { cart, coupon, isCouponApplied } = get();
+        
+        // 1. Calculate Subtotal
+        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        
+        let total = subtotal;
+
+        // 2. Calculate Discount ONLY if coupon exists AND is explicitly applied
+        // FIX: Changed 'coupon.discount' to 'coupon.discountPercentage'
+        if (coupon && isCouponApplied) {
+            const discountAmount = (subtotal * (coupon.discountPercentage || 0)) / 100;
+            total = subtotal - discountAmount;
+        }
+
+        set({ subtotal, total });
+    },
+}));

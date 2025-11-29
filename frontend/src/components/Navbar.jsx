@@ -17,7 +17,7 @@ const Navbar = () => {
         <div className="container mx-auto px-4 py-3">
             <div className="flex flex-wrap justify-between items-center">
             <Link to={'/'} className="text-2xl font-bold text-emerald-400 items-center space-x-z flex">
-             OpenCart
+             BeadLab Nyeri
             </Link>
             <a 
       href={`https://wa.me/${phoneNumber}?text=${encodedMessage}`} 

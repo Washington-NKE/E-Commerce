@@ -3,10 +3,11 @@ import express from 'express';
 import { 
     createOrder, 
     getOrderStatus, 
-    getUserOrders, 
-    mpesaWebhook 
+    getUserOrders,
+    getAllOrders,
+    updateOrderStatus
 } from '../controllers/order.controller.js';
-import { protectRoute } from '../middlewares/auth.middleware.js';
+import { protectRoute, adminRoute } from '../middlewares/auth.middleware.js';
 
 const router = express.Router();
 
@@ -15,7 +16,7 @@ router.post('/create', protectRoute, createOrder);
 router.get('/status/:orderId', protectRoute, getOrderStatus);
 router.get('/user-orders', protectRoute, getUserOrders);
 
-// Public webhook route (M-Pesa callbacks don't include auth tokens)
-router.post('/mpesa-webhook', mpesaWebhook);
+router.get("/", protectRoute, adminRoute, getAllOrders);
+router.put("/:orderId/status", protectRoute, adminRoute, updateOrderStatus);
 
 export default router;

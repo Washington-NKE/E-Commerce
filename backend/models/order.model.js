@@ -1,4 +1,3 @@
-// backend/models/order.model.js (Updated)
 import mongoose from "mongoose";
 
 const orderSchema = new mongoose.Schema({
@@ -36,7 +35,7 @@ const orderSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['pending', 'paid', 'failed', 'cancelled'],
+        enum: ['pending', 'paid', 'failed', 'cancelled', 'delivered'],
         default: 'pending'
     },
     paymentMethod: {
@@ -44,11 +43,41 @@ const orderSchema = new mongoose.Schema({
         enum: ['mpesa', 'card'],
         default: 'mpesa'
     },
-    // M-Pesa specific fields
+
+    pickupLocation: {
+        type: String,
+        required: true
+    },
+    pickupDate: {
+        type: String,
+        required: true
+    },
+    pickupTime: {
+        type: String,
+        required: true
+    },
+
+    external_reference: { 
+        type: String, 
+        unique: true, 
+        sparse: true 
+    },
+
+    transactionReference: { 
+        type: String, 
+        unique: true, 
+        sparse: true 
+    },
+
     mpesaTransactionId: {
         type: String,
         sparse: true
     },
+
+    paymentMeta: {
+        type: mongoose.Schema.Types.Mixed
+    },
+    
     mpesaTransactionTime: {
         type: Date
     },
@@ -58,11 +87,9 @@ const orderSchema = new mongoose.Schema({
     customerName: {
         type: String
     },
-    // Legacy field for backward compatibility - removed default null
     stripeSessionId: {
         type: String,
         sparse: true
-        // Don't set default: null as it causes duplicate key issues
     },
     paidAt: {
         type: Date
@@ -71,14 +98,10 @@ const orderSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// Create indexes with proper sparse settings
 orderSchema.index({ user: 1, createdAt: -1 });
 orderSchema.index({ orderId: 1 });
-orderSchema.index({ status: 1, totalAmount: 1 });
-orderSchema.index({ mpesaTransactionId: 1 }, { sparse: true });
-
-// Create sparse unique index for stripeSessionId to allow multiple null values
-orderSchema.index({ stripeSessionId: 1 }, { unique: true, sparse: true });
+orderSchema.index({ external_reference: 1 });
+orderSchema.index({ transactionReference: 1 });
 
 const Order = mongoose.model("Order", orderSchema);
 
